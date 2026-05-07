@@ -2,7 +2,17 @@
   "permissions": {
     "allow": [
       "Bash(git *)",
-      "Bash(brew install *)"
+      "Bash(brew install *)",
+      "Bash(curl -s \"https://trading-api.kalshi.com/trade-api/v2/markets?limit=100&status=open&series_ticker=TENNIS\")",
+      "Bash(python3 -m json.tool)",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://api.elections.kalshi.com/trade-api/v2/markets?limit=5\")",
+      "Bash(curl -s -w \"\\\\nHTTP:%{http_code}\" \"https://trading-api.kalshi.com/trade-api/v2/markets?limit=5&series_ticker=ATP\")",
+      "Bash(curl -s \"https://api.elections.kalshi.com/trade-api/v2/series?limit=10000\")",
+      "Bash(python3 -c ' *)",
+      "Bash(curl -s \"https://api.elections.kalshi.com/trade-api/v2/events?limit=200&status=open&series_ticker=KXATPGAME\")",
+      "Bash(curl -s \"https://api.elections.kalshi.com/trade-api/v2/events?limit=200&status=open&series_ticker=KXFOMENSINGLES\")",
+      "Bash(curl -s 'https://api.elections.kalshi.com/trade-api/v2/events?limit=50&status=open&series_ticker=__TRACKED_VAR__')",
+      "Bash(pip3 install *)"
     ]
   }
 }
