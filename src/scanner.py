@@ -18,9 +18,14 @@ MIN_VOLUME = 100    # skip illiquid markets
 
 
 def fuzzy_match_player(kalshi_name: str, atp_names: list[str], threshold: int = 75) -> Optional[str]:
+    # token_sort_ratio handles name-order mismatches (e.g. "Bu Yunchaokete" vs "Yunchaokete Bu")
     result = process.extractOne(kalshi_name, atp_names, scorer=fuzz.token_sort_ratio)
     if result and result[1] >= threshold:
         return result[0]
+    # Fallback: try partial ratio for players with extra middle names
+    result2 = process.extractOne(kalshi_name, atp_names, scorer=fuzz.partial_ratio)
+    if result2 and result2[1] >= 90:
+        return result2[0]
     return None
 
 
@@ -62,11 +67,8 @@ def analyze_match(match: dict, df: pd.DataFrame, model, cache, atp_names: list[s
     p2_kalshi = players[1]["name"]
     surface   = infer_surface(match["title"], match.get("competition", ""))
 
-    p1_atp = fuzzy_match_player(p1_kalshi, atp_names)
-    p2_atp = fuzzy_match_player(p2_kalshi, atp_names)
-
-    if not p1_atp or not p2_atp:
-        return []
+    p1_atp = fuzzy_match_player(p1_kalshi, atp_names) or p1_kalshi
+    p2_atp = fuzzy_match_player(p2_kalshi, atp_names) or p2_kalshi
 
     X = build_live_features(p1_atp, p2_atp, surface, df, cache)
     prob_p1 = float(model.predict_proba(X)[0, 1])
