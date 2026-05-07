@@ -19,13 +19,13 @@ TO_ADDRESS     = os.getenv("NOTIFY_EMAIL", GMAIL_ADDRESS)
 
 
 def _bet_row_html(match: dict, bet: dict, rank: int) -> str:
-    tag        = "★ UPSET PICK" if bet["is_upset_pick"] else "Value Pick"
+    tag        = "★ Upset" if bet["is_upset_pick"] else "Value"
     tag_color  = "#c0392b" if bet["is_upset_pick"] else "#2980b9"
     edge_color = "#27ae60" if bet["edge"] >= 0.10 else "#f39c12"
     return f"""
     <tr>
-      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:bold;color:#333;">
-        #{rank} &nbsp;<span style="color:{tag_color};font-size:12px;">{tag}</span>
+      <td style="padding:10px 8px;border-bottom:1px solid #eee;font-weight:bold;color:#333;text-align:center;">
+        #{rank}<br><span style="color:{tag_color};font-size:11px;font-weight:normal;">{tag}</span>
       </td>
       <td style="padding:10px 8px;border-bottom:1px solid #eee;">
         <strong>{match['title']}</strong><br>
@@ -100,12 +100,13 @@ def _build_html(bets: list[tuple]) -> str:
     <!-- Key -->
     <div style="padding:12px 28px;background:#fffbf0;border-bottom:1px solid #f0e8c8;
                 font-size:13px;color:#666;">
-      <strong>How to read:</strong>
-      <span style="color:#c0392b;">★ Upset Pick</span> = Kalshi has this player as underdog (&lt;45%) but our model says they should win.
+      <strong>How to read:</strong> Picks are ranked <strong>#1 = best edge overall</strong>, regardless of type.
       &nbsp;|&nbsp;
-      <strong>Edge</strong> = model probability minus Kalshi ask price — the larger, the better.
+      <span style="color:#c0392b;">★ Upset</span> = Kalshi prices this player as underdog but model disagrees.
       &nbsp;|&nbsp;
-      <strong>Kelly</strong> = suggested % of bankroll per bet.
+      <strong>Edge</strong> = model probability minus Kalshi price (bigger = better opportunity).
+      &nbsp;|&nbsp;
+      <strong>Kelly</strong> = suggested % of bankroll.
     </div>
 
     <!-- Table -->

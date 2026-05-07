@@ -136,12 +136,9 @@ def scan(log_picks: bool = True) -> list[dict]:
             if not p1_matched or not p2_matched:
                 skipped.append(match["title"])
 
-    # Sort: upset picks first (more interesting), then by edge within each group
-    upset_bets = [(m, b) for m, b in all_bets if b["is_upset_pick"]]
-    value_bets = [(m, b) for m, b in all_bets if not b["is_upset_pick"]]
-    upset_bets.sort(key=lambda x: x[1]["edge"], reverse=True)
-    value_bets.sort(key=lambda x: x[1]["edge"], reverse=True)
-    all_bets_sorted = upset_bets + value_bets
+    # Sort purely by edge — best opportunity first regardless of type
+    all_bets.sort(key=lambda x: x[1]["edge"], reverse=True)
+    all_bets_sorted = all_bets
 
     # Print results
     _print_results(all_bets_sorted, matches, skipped)
@@ -165,24 +162,13 @@ def scan(log_picks: bool = True) -> list[dict]:
 
 
 def _print_results(all_bets: list, matches: list, skipped: list):
-    upset_bets = [(m, b) for m, b in all_bets if b["is_upset_pick"]]
-    value_bets = [(m, b) for m, b in all_bets if not b["is_upset_pick"]]
-
     print(f"\n{'='*65}")
-    print(f"  UPSET PICKS  — model disagrees with Kalshi favourite")
+    print(f"  TODAY'S PICKS  — ranked by edge (best first)")
     print(f"{'='*65}")
-    if not upset_bets:
-        print("  None today.")
-    for match, bet in upset_bets:
-        _print_bet(match, bet)
-
-    print(f"\n{'='*65}")
-    print(f"  VALUE PICKS  — both sides agree on favourite, but model finds edge")
-    print(f"{'='*65}")
-    if not value_bets:
-        print("  None today.")
-    for match, bet in value_bets:
-        _print_bet(match, bet)
+    if not all_bets:
+        print("  No value bets found today.")
+    for i, (match, bet) in enumerate(all_bets, 1):
+        _print_bet(match, bet, rank=i)
 
     print(f"\n{'='*65}")
     print(f"  {len(all_bets)} pick(s) across {len(matches)} matches")
@@ -191,9 +177,9 @@ def _print_results(all_bets: list, matches: list, skipped: list):
     print(f"{'='*65}\n")
 
 
-def _print_bet(match: dict, bet: dict):
+def _print_bet(match: dict, bet: dict, rank: int = 0):
     tag = "★ UPSET" if bet["is_upset_pick"] else "  VALUE"
-    print(f"\n  {tag} | {match['title']}")
+    print(f"\n  #{rank} {tag} | {match['title']}")
     print(f"         Bet     : YES on {bet['player']} (vs {bet['opponent']})")
     print(f"         Surface : {bet['surface']}")
     print(f"         Model   : {bet['model_prob']:.1%}  |  Kalshi: {bet['kalshi_mid']:.2f}  |  Edge: {bet['edge']:+.1%}")
